@@ -5,6 +5,7 @@ import cors from "cors";
 
 import bodyParser from "body-parser";
 import router from "./routes/user.routes.js";
+import produitrouter from "./routes/produit.route.js";
 import path from "path";
 import connectDB from "./config/connectDB.js";
 import http from "http";
@@ -51,6 +52,7 @@ app.use(express.static("public"));
 
 
 app.use("/user", router);
+app.use("/produit", produitrouter);
 
 app.use(cors());
 
