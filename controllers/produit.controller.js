@@ -14,3 +14,12 @@ export const addproduit = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const getproduits = async (req, res) => {
+    try {
+        const produits = await produit.find({});
+        res.status(200).json({ produits });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
