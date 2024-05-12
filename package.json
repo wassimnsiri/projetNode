@@ -1,0 +1,40 @@
+{
+  "name": "backend_pim",
+  "version": "1.0.0",
+  "description": "This is the backend project for pim",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "pim"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.7.1",
+    "@socket.io/cluster-adapter": "^0.2.2",
+    "bcrypt": "^5.1.1",
+    "bson": "^6.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "google-auth-library": "^9.6.3",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.4",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "naughty-words": "^1.2.0",
+    "nodemailer": "^6.9.9",
+    "nodemon": "^3.0.3",
+    "socket.io": "^4.7.4",
+    "socket.io-client": "^4.7.4",
+    "stripe": "^14.18.0",
+    "twilio": "^4.23.0"
+  }
+}
