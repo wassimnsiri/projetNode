@@ -6,10 +6,12 @@ import mongoose from 'mongoose';
 import bodyParser from "body-parser";
 import router from "./routes/user.routes.js";
 import produitrouter from "./routes/produit.route.js";
+import chauffeurrouter from "./routes/chauffeur.routes.js";
 import path from "path";
 import depotrouter from "./routes/depot.routes.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import chauffeur from "./models/chauffeur.model.js";
 
 
 
@@ -62,6 +64,7 @@ app.use(express.static("public"));
 app.use("/user", router);
 app.use("/produit", produitrouter);
 app.use("/depot", depotrouter);
+app.use("/chauffeur", chauffeurrouter);
 
 app.use(cors());
 
