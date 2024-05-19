@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
-const depotLivreurSchema = new mongoose.Schema({
+const depotSchema = new mongoose.Schema({
     nom: {
         type: String,
         required: true
@@ -17,6 +17,6 @@ const depotLivreurSchema = new mongoose.Schema({
 
 });
 
-const DepotLivreur = mongoose.model('DepotLivreur', depotLivreurSchema);
+const depot = mongoose.model('depot', depotSchema);
 
-export default DepotLivreur;
+export default depot;
