@@ -7,7 +7,7 @@ import generateVerificationToken from '../controllers/generateVerificationToken.
 
 export const registerUser = async (req, res) => {
     try {
-        const { username, password, email } = req.body;
+        const { username, password, email, matricule, firstName, lastName } = req.body;
 
         const existingUser = await UserModel.findOne({ username });
         const existing = await UserModel.findOne({ email });
@@ -19,9 +19,11 @@ export const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new UserModel({
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPassword
+            username,
+            email,
+            password: hashedPassword,
+            matricule,
+         
         });
 
         const user = await newUser.save();
@@ -38,7 +40,19 @@ export const registerUser = async (req, res) => {
 
         const verificationLink = `${process.env.BASE_URL}/verify/${verificationToken}`;
         const emailSubject = 'Email Verification';
-        const emailHtml = `Click the following link to verify your email: <a href="${verificationLink}">Verify Email</a>`;
+        const emailHtml = `
+            <p>Hello ${username},</p>
+            <p>Welcom to agil !</p>
+            <p>Your registration details:</p>
+            <ul>
+                <li>Username: ${username}</li>
+                <li>Email: ${email}</li>
+                <li>Matricule: ${matricule}</li>
+                <!-- Add more details as needed -->
+            </ul>
+            <p>Please click the following link to verify your email:</p>
+            <a href="${verificationLink}">Verify Email</a>
+        `;
         await sendEmail(newUser.email, emailSubject, emailHtml);
 
         res.status(200).json({ user: newUser, authToken, message: 'User registered successfully. Please check your email for verification.' });
@@ -46,6 +60,7 @@ export const registerUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 export const verifyEmail = async (req, res) => {
     try {

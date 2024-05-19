@@ -2,25 +2,32 @@ import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
-
+import mongoose from 'mongoose';
 import bodyParser from "body-parser";
 import router from "./routes/user.routes.js";
 import produitrouter from "./routes/produit.route.js";
 import path from "path";
-import connectDB from "./config/connectDB.js";
-import http from "http";
-import { Server as SocketIOServer } from "socket.io";
+import depotlivreurrouter from "./routes/depotlivreur.routes.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
 
 
 
-
-
 const app = express();
-const server = http.createServer(app);
-const io = new SocketIOServer(server);
+const port = process.env.PORT || 3030;
+const databaseName = 'esbpfe';
+mongoose.set('debug', true);
+mongoose.Promise = global.Promise;
+mongoose
+  .connect(`mongodb://0.0.0.0:27017/${databaseName}`)
+  .then(() => {
+    console.log(`Connected to ${databaseName}`);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -36,8 +43,9 @@ dotenv.config();
 app.set("view engine", "ejs");
 app.set("views", "./public");
 
+
 // Connect to the database
-connectDB();
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -53,6 +61,7 @@ app.use(express.static("public"));
 
 app.use("/user", router);
 app.use("/produit", produitrouter);
+app.use("/depotlivreur", depotlivreurrouter);
 
 app.use(cors());
 
@@ -61,10 +70,7 @@ app.use(cors());
 
 
 
-server.listen(process.env.PORT, () => {
-  console.log(
-    `Server is running ${process.env.HOST} on port ${process.env.PORT}`
-  );
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
 });
 
-export { io };

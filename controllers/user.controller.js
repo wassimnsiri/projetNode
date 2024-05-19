@@ -5,14 +5,27 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../utils/mailer.js";
 import { OAuth2Client } from "google-auth-library";
 import mongoose from "mongoose"
-import { io } from "../server.js";
+
 import generateVerificationToken from '../controllers/generateVerificationToken.js';
 import { validationResult } from 'express-validator';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
-
+export const getuserbyusername = async (req, res) => {
+  try {
+    const username = req.params.username;
+    const user = await User.findOne ({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json(user);
+  }
+  catch (error) {
+    console.error("Error finding user by username:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export const resetPassword = async (req, res) => {
   const { email, password, newPassword } = req.body;

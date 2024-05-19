@@ -12,6 +12,17 @@ const produitSchema = new mongoose.Schema({
         type: String,
         enum: ['Carburants', 'Lubrifiants', 'Emballage']
     },
+    quantite:{
+
+        type: Number,
+    },
+    prix: {
+        type: Number,
+    },
+   
+    quantitedispo: {
+        type: Number,
+    },
 }  ); 
 
 

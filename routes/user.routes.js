@@ -8,7 +8,7 @@ import { body } from 'express-validator';
 
 import { getAllUsers, getById, updatePassword, updateUser } from '../controllers/user.controller.js';
 import { imageUploadMiddleware } from "../middlewares/multer-config.js";
-import  {getAll,deleteUser} from '../controllers/user.controller.js';
+import  {getAll,deleteUser,getuserbyusername} from '../controllers/user.controller.js';
 import { registerUser,loginUser,verifyEmail,loginAdmin,loginUser1} from '../controllers/AuthController.js';
 import  {getAdmins} from '../controllers/user.controller.js';
 
@@ -49,7 +49,7 @@ router.post("/change-password", async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
-
+router.get('/test/:username',getuserbyusername);
 
 router.post('/verify-google', verifyUserWithGoogle);
 
