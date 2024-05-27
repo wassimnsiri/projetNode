@@ -7,7 +7,7 @@ import generateVerificationToken from '../controllers/generateVerificationToken.
 
 export const registerUser = async (req, res) => {
     try {
-        const { username, password, email, matricule, firstName, lastName } = req.body;
+        const { username, password, email, matricule, firstName, lastName ,role} = req.body;
 
         const existingUser = await UserModel.findOne({ username });
         const existing = await UserModel.findOne({ email });
@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
             email,
             password: hashedPassword,
             matricule,
-         
+            role ,         
         });
 
         const user = await newUser.save();
