@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import bodyParser from "body-parser";
 import router from "./routes/user.routes.js";
 import produitrouter from "./routes/produit.route.js";
+import commandeRouter from "./routes/commande.routes.js";
 import chauffeurrouter from "./routes/chauffeur.routes.js";
 import path from "path";
 import depotrouter from "./routes/depot.routes.js";
@@ -65,6 +66,7 @@ app.use("/user", router);
 app.use("/produit", produitrouter);
 app.use("/depot", depotrouter);
 app.use("/chauffeur", chauffeurrouter);
+app.use("/commande", commandeRouter);
 
 app.use(cors());
 
