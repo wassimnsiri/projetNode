@@ -1,39 +1,62 @@
 import { Router } from "express";
-import stripePackage from 'stripe';
-import { addproduit ,getproduits} from "../controllers/produit.controller.js";
+import Stripe from "stripe";
+import dotenv from "dotenv";
+import { addproduit, getproduits } from "../controllers/produit.controller.js";
 import produit from "../models/produit.model.js";
 
+dotenv.config();
 
-const stripe = (process.env.STRIPE_SECRET);
-
+const stripe = new Stripe(process.env.STRIPE_SECRET);
 
 const produitrouter = Router();
 produitrouter.post('/addproduit', addproduit);
 produitrouter.get('/getproduits', getproduits);
+
 produitrouter.post('/stripe', async (req, res) => {
+    const { paymentToken, userId, price } = req.body;
+
+    // Validate input
+    if (!paymentToken || !userId || !price) {
+        return res.status(400).send({ error: 'Missing required fields' });
+    }
+
     try {
-        const { amount, id } = req.body;
-        const payment = await stripe.paymentIntents.create({
-            prix: produit.prix * produit.quantite,
-            currency: "USD",
-            description: "Esbpfe",
-            payment_method: id,
-            confirm: true
+        // Create a PaymentIntent with the provided payment token and amount
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: price, // price should be in the smallest currency unit (e.g., cents for USD)
+            currency: 'usd',
+            payment_method: paymentToken,
+           
+            confirm: true,
+            automatic_payment_methods: {
+                enabled: true,
+                allow_redirects: 'never',
+            },
         });
-        console.log("Payment", payment);
-        res.json({
-            message: "Payment successful",
-            success: true,
-            id: payment.id // Move this line inside the try block
-        });
+
+        // If the payment requires additional actions (e.g., 3D Secure), handle them
+        if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_source_action') {
+            res.send({
+                requiresAction: true,
+                clientSecret: paymentIntent.client_secret,
+            });
+        } else if (paymentIntent.status === 'succeeded') {
+            // Payment was successful
+            res.send({ success: true });
+        } else {
+            // Unexpected status
+            res.status(500).send({ error: 'Unexpected payment status' });
+        }
     } catch (error) {
-        console.log("Error", error);
-        res.json({
-            message: "Payment failed",
-            success: false
-        });
+        // Handle errors from Stripe
+        if (error.type === 'StripeCardError') {
+            // Display a very specific error message for card errors
+            res.status(400).send({ error: error.message });
+        } else {
+            // Generic catch-all error handling
+            res.status(500).send({ error: error.message });
+        }
     }
 });
-
 
 export default produitrouter;
