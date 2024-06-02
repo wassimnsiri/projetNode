@@ -27,4 +27,3 @@ export const getproduits = async (req, res) => {
     }
     
 };
-    

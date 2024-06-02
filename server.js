@@ -13,6 +13,7 @@ import depotrouter from "./routes/depot.routes.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import chauffeur from "./models/chauffeur.model.js";
+import reclamationrouter from "./routes/reclamtion.routes.js";
 
 
 
@@ -67,6 +68,7 @@ app.use("/produit", produitrouter);
 app.use("/depot", depotrouter);
 app.use("/chauffeur", chauffeurrouter);
 app.use("/commande", commandeRouter);
+app.use("/reclamation", reclamationrouter);
 
 app.use(cors());
 

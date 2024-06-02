@@ -1,7 +1,7 @@
 import { de } from "naughty-words";
 import Commande from "../models/commande.model.js";
 import User from "../models/user.model.js"; 
-
+import Product from "../models/produit.model.js";
 
 export const addCommande = async (req, res) => {
     try {
@@ -53,16 +53,28 @@ export const getallcommandeandmakethesamecommandeforsameusertogather = async (re
         const userIds = Object.keys(commandesGroupedByUser);
         const users = await User.find({ _id: { $in: userIds } });
 
-        // Créer un dictionnaire pour un accès rapide aux informations des utilisateurs
+        // Récupérer les informations des produits
+        const productIds = commandes.map(commande => commande.productId);
+        const products = await Product.find({ _id: { $in: productIds } });
+
+        // Créer des dictionnaires pour un accès rapide aux informations des utilisateurs et des produits
         const userDict = users.reduce((acc, user) => {
             acc[user._id] = user;
             return acc;
         }, {});
 
-        // Ajouter les informations des utilisateurs aux groupes de commandes
+        const productDict = products.reduce((acc, product) => {
+            acc[product._id] = product;
+            return acc;
+        }, {});
+
+        // Ajouter les informations des utilisateurs et des produits aux groupes de commandes
         const result = userIds.map(userId => ({
             user: userDict[userId],
-            commandes: commandesGroupedByUser[userId]
+            commandes: commandesGroupedByUser[userId].map(commande => ({
+                ...commande._doc,
+                product: productDict[commande.productId]
+            }))
         }));
 
         res.status(200).json(result);
@@ -70,6 +82,18 @@ export const getallcommandeandmakethesamecommandeforsameusertogather = async (re
         res.status(500).json({ message: error.message });
     }
 }
+export const changestaus = async (req, res) => {
+    try {
+        const { commandeId, newStatus } = req.body;
+        const commande = await Commande.findByIdAndUpdate
+            (commandeId, { status: newStatus }, { new: true });
+        res.status(200).json(commande);
+    }catch (error){
+    res.status(500).json({ message: error.message });
+}
+}
+
+
 
 
 export default Commande;
