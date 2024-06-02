@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { addCommande } from "../controllers/commande.controller.js";
+import { passecommande ,getallcommandeandmakethesamecommandeforsameusertogather} from "../controllers/commande.controller.js";
 
 
 const commanderouter = Router();
 
-commanderouter.post('/addcommande', addCommande);
+commanderouter.post('/addcommande', passecommande);
+commanderouter.get('/getcommande', getallcommandeandmakethesamecommandeforsameusertogather);
 
 
 

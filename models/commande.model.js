@@ -1,22 +1,21 @@
 import mongoose from "mongoose";
-const { Schema, model } = mongoose; // Utiliser Schema et model du module mongoose
+const { Schema, model } = mongoose;
 
 const commandeSchema = new Schema(
     {
         userId: {
             type: Schema.Types.ObjectId,
-            ref: 'user', // Assurez-vous d'avoir un modèle 'User' défini ailleurs dans votre projet
+            ref: 'user',
             required: true
         },
         productId: {
             type: Schema.Types.ObjectId,
-            ref: 'produit', // Assurez-vous d'avoir un modèle 'Product' défini ailleurs dans votre projet
+            ref: 'produit',
             required: true
         },
-        quantity: {
+        commandeprice: { // Correction du nom du champ
             type: Number,
-            required: true,
-            
+            required: true
         },
         orderDate: {
             type: Date,
@@ -29,7 +28,7 @@ const commandeSchema = new Schema(
         }
     },
     {
-        timestamps: true // Ajoute createdAt et updatedAt automatiquement
+        timestamps: true
     }
 );
 
