@@ -92,6 +92,14 @@ export const changestaus = async (req, res) => {
     res.status(500).json({ message: error.message });
 }
 }
+export const getcommandebyuserId = async (req, res) => {
+    try {
+        const commandes = await Commande.find({ userId: req.params.userId });
+        res.status(200).json(commandes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 
 

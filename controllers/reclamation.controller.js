@@ -3,8 +3,8 @@ import reclamation from "../models/reclamation.model.js";
 
 export const addreclamation = async (req, res) => {
     try {
-        const { userId, message } = req.body;
-        const newreclamation = new reclamation({ userId, message });
+        const { userId, message ,username} = req.body;
+        const newreclamation = new reclamation({ userId, message ,username});
         await newreclamation.save();
         res.status(201).json(newreclamation);
     } catch (error) {
@@ -24,4 +24,25 @@ export const consultermesreclamation = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+export const getallreclamation = async (req, res) => {
+    try {
+        const reclamations = await reclamation.find();
+        res.status(200).json(reclamations);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+    export const changestatus = async (req , res )=> {
+        try{
+            const {reclamationId, newStatus} = req.body;
+            await reclamation.findByIdAndUpdate
+            (reclamationId, {status: newStatus});
+            res.status(200).json({message: "Status updated successfully"});
+        }catch(error){
+            res.status(500).json({message: error.message})
+        }
+    }
+
 
