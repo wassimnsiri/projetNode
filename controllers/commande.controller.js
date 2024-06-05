@@ -12,30 +12,54 @@ export const addCommande = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 export const passecommande = async (req, res) => {
     try {
-        const { userId, produits,commandeprice } = req.body; // Reçoit l'userId et une liste d'objets de produits avec quantités
+        const { userId, produits, commandeprice } = req.body; // Receives userId and a list of product objects with quantities
         const commandes = [];
 
-        // Crée une commande pour chaque produit dans la liste
+        // Loop through each product in the list
         for (const produit of produits) {
+            const { productId, quantity } = produit;
+
+            // Validate quantity
+            if (typeof quantity !== 'number' || isNaN(quantity) || quantity <= 0) {
+                return res.status(400).json({ message: `Invalid quantity for product ${productId}` });
+            }
+
+            // Find the product in the database
+            const existingProduit = await Product.findById(productId);
+
+            // Check if the product exists and has enough quantity
+            if (!existingProduit) {
+                return res.status(404).json({ message: `Product with ID ${productId} not found` });
+            }
+
+            if (existingProduit.quantite < quantity) {
+                return res.status(400).json({ message: `Not enough stock for product ${existingProduit.name}` });
+            }
+
+            // Deduct the quantity from the available stock
+            existingProduit.quantite -= quantity;
+            await existingProduit.save();
+
+            // Create a new order
             const newCommande = new Commande({
                 userId,
                 commandeprice,
-                productId: produit.productId,
-                quantity: produit.quantity,
-                // Supposons que chaque produit a un prix
+                productId,
+                quantity,
             });
             await newCommande.save();
             commandes.push(newCommande);
         }
 
         res.status(201).json(commandes);
-
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
+
 export const getallcommandeandmakethesamecommandeforsameusertogather = async (req, res) => {
     try {
         const commandes = await Commande.find();
@@ -100,7 +124,60 @@ export const getcommandebyuserId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+export const totalprice = async (req, res) => {
+    try {
+        
+        const commandes = await Commande.find();
+        const totalprice = commandes.reduce((acc, commande) => acc + commande.commandeprice, 0);
+        res.status(200).json({ totalprice });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+export const revenuebydate = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.body;
+        const commandes = await Commande.find({
+            createdAt: {
+                $gte: new Date(startDate),
+                $lt: new Date(endDate)
+            }
+        });
+        const totalprice = commandes.reduce((acc, commande) => acc + commande.commandeprice, 0);
+        res.status(200).json({ totalprice });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}   
+export const revenuedechagejour = async (req, res) => {
+    try {
+        // Aggregate commandes to group by date and sum the prices
+        const commandes = await Commande.aggregate([
+            {
+                // Project to extract date only (without time) from the createdAt field or a date field you have
+                $project: {
+                    date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    commandeprice: 1
+                }
+            },
+            {
+                // Group by the date and sum the prices
+                $group: {
+                    _id: "$date",
+                    totalprice: { $sum: "$commandeprice" }
+                }
+            },
+            {
+                // Sort by date in ascending order (optional)
+                $sort: { _id: 1 }
+            }
+        ]);
 
+        res.status(200).json(commandes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 

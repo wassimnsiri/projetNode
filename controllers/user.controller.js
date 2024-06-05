@@ -11,7 +11,16 @@ import { validationResult } from 'express-validator';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-
+export const stastverifiedaccount = async (req, res) => {
+  try {
+    const verifiedUsersCount = await  User.countDocuments({ isVerified: true });
+    const inverseUsersCount = await User.countDocuments({ isVerified: false });
+    res.json({verifiedUsersCount, inverseUsersCount });
+  
+  }catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+  };  
 export const getuserbyusername = async (req, res) => {
   try {
     const username = req.params.username;
@@ -692,6 +701,7 @@ export const addAdmin = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 

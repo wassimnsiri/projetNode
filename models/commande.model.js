@@ -13,6 +13,10 @@ const commandeSchema = new Schema(
             ref: 'produit',
             required: true
         },
+        quantity: {
+            type: Number,
+            required: true
+        },
         commandeprice: { // Correction du nom du champ
             type: Number,
             required: true
