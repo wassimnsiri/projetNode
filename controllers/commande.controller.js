@@ -178,6 +178,31 @@ export const revenuedechagejour = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+export const countcommandebydate = async (req, res) => {
+    try {
+        const commandes = await Commande.aggregate([
+            {
+                $project: {
+                    date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }
+                }
+            },
+            {
+                $group: {
+                    _id: "$date",
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 } // Optional: to sort the results by date
+            }
+        ]);
+
+        res.status(200).json(commandes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 
 
 

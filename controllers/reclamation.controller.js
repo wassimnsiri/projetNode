@@ -44,5 +44,27 @@ export const getallreclamation = async (req, res) => {
             res.status(500).json({message: error.message})
         }
     }
+export const supprimerreclamation = async (req, res) => { 
+try{
+    const reclamationId = req.params.reclamationId;
+    await reclamation.findByIdAndDelete(reclamationId);
+    res.status(200).json({message: "Reclamation deleted successfully"});
+
+}catch(error){
+    res.status(500).json({message: error.message});
+
+}
+}
+export const editreclamation = async (req,res) =>{
+    try{
+        const reclamationId = req.params.reclamationId;
+        const message = req.body.message;   
 
 
+        await reclamation.findByIdAndUpdate(reclamationId,{message:message})
+        reclamation.save
+        res.status(200).json({message: "Reclamation edit successfully"});
+    }catch(error){
+        res.status(500).json({message: error.message});
+    }
+}

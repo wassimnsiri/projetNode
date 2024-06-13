@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { passecommande,totalprice, revenuedechagejour ,getallcommandeandmakethesamecommandeforsameusertogather,changestaus,getcommandebyuserId} from "../controllers/commande.controller.js";
+import { countcommandebydate,passecommande,totalprice, revenuedechagejour ,getallcommandeandmakethesamecommandeforsameusertogather,changestaus,getcommandebyuserId} from "../controllers/commande.controller.js";
 
 
 const commanderouter = Router();
@@ -10,6 +10,7 @@ commanderouter.post('/updatecommande', changestaus);
 commanderouter.get('/getcommande/:userId', getcommandebyuserId);
 commanderouter.get('/test',totalprice)
 commanderouter.get('/revenue',revenuedechagejour)
+commanderouter.get('/statC',countcommandebydate)
 
 
 export default commanderouter;
