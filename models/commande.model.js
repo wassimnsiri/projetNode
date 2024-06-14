@@ -29,6 +29,10 @@ const commandeSchema = new Schema(
             type: String,
             enum: ['pending', 'shipped', 'delivered', 'cancelled'],
             default: 'pending'
+        },
+        reason: {
+            type: String,
+            required: false
         }
     },
     {

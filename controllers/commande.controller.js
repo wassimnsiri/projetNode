@@ -201,7 +201,18 @@ export const countcommandebydate = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
+export const annulerCommandeavecleurraison = async (req, res) => {
+    try {
+        const { commandeId, reason } = req.body;
+        const commande = await Commande.findByIdAndUpdate
+            (commandeId, { status: 'cancelled', reason }, { new: true });
+        res.status(200).json(commande);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 
