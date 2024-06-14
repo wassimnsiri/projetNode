@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { countcommandebydate,passecommande,totalprice, revenuedechagejour ,
     getallcommandeandmakethesamecommandeforsameusertogather,changestaus,
-    annulerCommandeavecleurraison,getcommandebyuserId} from "../controllers/commande.controller.js";
+    changeStatusOrCancel,getcommandebyuserId} from "../controllers/commande.controller.js";
 
 
 const commanderouter = Router();
@@ -13,7 +13,7 @@ commanderouter.get('/getcommande/:userId', getcommandebyuserId);
 commanderouter.get('/test',totalprice)
 commanderouter.get('/revenue',revenuedechagejour)
 commanderouter.get('/statC',countcommandebydate)
-commanderouter.put('/annulation', annulerCommandeavecleurraison);
+commanderouter.put('/annulation', changeStatusOrCancel);
 
 
 

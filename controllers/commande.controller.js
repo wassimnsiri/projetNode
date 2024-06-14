@@ -2,7 +2,7 @@ import { de } from "naughty-words";
 import Commande from "../models/commande.model.js";
 import User from "../models/user.model.js"; 
 import Product from "../models/produit.model.js";
-
+import sendEmail from '../utils/mailer.js';
 export const addCommande = async (req, res) => {
     try {
         const newCommande = new Commande(req.body);
@@ -202,14 +202,42 @@ export const countcommandebydate = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-export const annulerCommandeavecleurraison = async (req, res) => {
+
+export const changeStatusOrCancel = async (req, res) => {
     try {
-        const { commandeId, reason } = req.body;
-        const commande = await Commande.findByIdAndUpdate
-            (commandeId, { status: 'cancelled', reason }, { new: true });
+        const { commandeId, newStatus, reason } = req.body;
+        
+        let updateData = { status: newStatus };
+        
+        // If the status is 'cancelled', include the reason
+        if (newStatus === 'cancelled') {
+            updateData.reason = reason;
+        }
+        
+        const commande = await Commande.findByIdAndUpdate(
+            commandeId, 
+            updateData, 
+            { new: true }
+        ).populate('userId'); // Populate to get user details
+        
+        if (!commande) {
+            return res.status(404).json({ message: 'Commande not found' });
+        }
+
+        // If the status is 'cancelled', send email notification
+        if (newStatus === 'cancelled') {
+            const user = commande.userId; // Assuming userId field contains user document
+            const emailSubject = `Commande Annulée: ${commandeId}`;
+            const emailHtml = `
+                <p>Votre commande avec l'ID ${commandeId} a été annulée.</p>
+                <p>Raison de l'annulation: ${reason}</p>
+            `;
+
+            await sendEmail(user.email, emailSubject, emailHtml); // Use the user's email
+        }
+
         res.status(200).json(commande);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
