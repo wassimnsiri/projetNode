@@ -3,6 +3,7 @@ import Commande from "../models/commande.model.js";
 import User from "../models/user.model.js"; 
 import Product from "../models/produit.model.js";
 import sendEmail from '../utils/mailer.js';
+import { io } from "../server.js";
 export const addCommande = async (req, res) => {
     try {
         const newCommande = new Commande(req.body);
@@ -15,50 +16,60 @@ export const addCommande = async (req, res) => {
 
 export const passecommande = async (req, res) => {
     try {
-        const { userId, produits, commandeprice } = req.body; // Receives userId and a list of product objects with quantities
-        const commandes = [];
-
-        // Loop through each product in the list
-        for (const produit of produits) {
-            const { productId, quantity } = produit;
-
-            // Validate quantity
-            if (typeof quantity !== 'number' || isNaN(quantity) || quantity <= 0) {
-                return res.status(400).json({ message: `Invalid quantity for product ${productId}` });
-            }
-
-            // Find the product in the database
-            const existingProduit = await Product.findById(productId);
-
-            // Check if the product exists and has enough quantity
-            if (!existingProduit) {
-                return res.status(404).json({ message: `Product with ID ${productId} not found` });
-            }
-
-            if (existingProduit.quantite < quantity) {
-                return res.status(400).json({ message: `Not enough stock for product ${existingProduit.name}` });
-            }
-
-            // Deduct the quantity from the available stock
-            existingProduit.quantite -= quantity;
-            await existingProduit.save();
-
-            // Create a new order
-            const newCommande = new Commande({
-                userId,
-                commandeprice,
-                productId,
-                quantity,
-            });
-            await newCommande.save();
-            commandes.push(newCommande);
+      const { userId, produits, commandeprice } = req.body; // Receives userId and a list of product objects with quantities
+      const commandes = [];
+  
+      // Loop through each product in the list
+      for (const produit of produits) {
+        const { productId, quantity } = produit;
+  
+        // Validate quantity
+        if (typeof quantity !== 'number' || isNaN(quantity) || quantity <= 0) {
+          return res.status(400).json({ message: `Invalid quantity for product ${productId}` });
         }
-
-        res.status(201).json(commandes);
+  
+        // Find the product in the database
+        const existingProduit = await Product.findById(productId);
+  
+        // Check if the product exists and has enough quantity
+        if (!existingProduit) {
+          return res.status(404).json({ message: `Product with ID ${productId} not found` });
+        }
+  
+        if (existingProduit.quantite < quantity) {
+          return res.status(400).json({ message: `Not enough stock for product ${existingProduit.name}` });
+        }
+  
+        // Deduct the quantity from the available stock
+        existingProduit.quantite -= quantity;
+        await existingProduit.save();
+  
+        // Create a new order
+        const newCommande = new Commande({
+          userId,
+          commandeprice,
+          productId,
+          quantity,
+        });
+        await newCommande.save();
+        commandes.push(newCommande);
+      }
+  
+      // Fetch user for notification
+      const user = await User.findById(userId);
+      if (user) {
+        const notification = {
+          message: `Dear ${user.name}, your order has been placed successfully.`,
+          commandes,
+        };
+        io.emit("orderPlaced", notification);
+      }
+  
+      res.status(201).json(commandes);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
-}
+  };
 
 export const getallcommandeandmakethesamecommandeforsameusertogather = async (req, res) => {
     try {

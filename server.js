@@ -12,15 +12,14 @@ import path from "path";
 import depotrouter from "./routes/depot.routes.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import chauffeur from "./models/chauffeur.model.js";
 import reclamationrouter from "./routes/reclamtion.routes.js";
-
-
-
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 const app = express();
 const port = process.env.PORT || 3030;
 const databaseName = 'esbpfe';
+
 mongoose.set('debug', true);
 mongoose.Promise = global.Promise;
 mongoose
@@ -32,24 +31,24 @@ mongoose
     console.log(err);
   });
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  }
+});
+
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
-
-// Serve the 'index.html' file when the root URL is accessed
 
 // Load environment variables
 dotenv.config();
 
 app.set("view engine", "ejs");
 app.set("views", "./public");
-
-
-// Connect to the database
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -62,7 +61,6 @@ app.use(
 );
 app.use(express.static("public"));
 
-
 app.use("/user", router);
 app.use("/produit", produitrouter);
 app.use("/depot", depotrouter);
@@ -70,14 +68,17 @@ app.use("/chauffeur", chauffeurrouter);
 app.use("/commande", commandeRouter);
 app.use("/reclamation", reclamationrouter);
 
-app.use(cors());
-
-
-
-
-
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+io.on("connection", (socket) => {
+  console.log("A user connected");
+  
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
 });
 
+app.use(cors());
+
+server.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
+});
+export { io };
