@@ -74,6 +74,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
+  socket.on("sendMessage", (data) => {
+    // Handle incoming messages and broadcast to other users
+    io.emit("receiveMessage", data);
+  });
 });
 
 app.use(cors());

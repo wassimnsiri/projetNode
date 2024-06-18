@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import Product from "../models/produit.model.js";
 import sendEmail from '../utils/mailer.js';
 import { io } from "../server.js";
+import Notification from "../models/notification.model.js";
 export const addCommande = async (req, res) => {
     try {
         const newCommande = new Commande(req.body);
@@ -59,9 +60,18 @@ export const passecommande = async (req, res) => {
       const user = await User.findById(userId);
       if (user) {
         const notification = {
-          message: `Dear ${user.name}, your order has been placed successfully.`,
+          message: `Dear Agil,  order has been passed by ${user.username}.`,
           commandes,
         };
+  
+        // Save notification to the database
+        const newNotification = new Notification({
+          userId: user._id,
+          message: notification.message,
+        });
+        await newNotification.save();
+  
+        // Emit notification via socket.io
         io.emit("orderPlaced", notification);
       }
   
@@ -70,7 +80,6 @@ export const passecommande = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-
 export const getallcommandeandmakethesamecommandeforsameusertogather = async (req, res) => {
     try {
         const commandes = await Commande.find();

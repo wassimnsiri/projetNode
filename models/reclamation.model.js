@@ -17,6 +17,14 @@
             type: String,
             required: true
         },
+        title:{
+          type: String,
+          required: true
+        },
+        reason:{
+          type: String,
+          required: true
+        },
         status: {
             type: String,
             enum: ['pending', 'treated'],

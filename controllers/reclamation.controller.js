@@ -3,10 +3,10 @@ import reclamation from "../models/reclamation.model.js";
 
 export const addreclamation = async (req, res) => {
     try {
-        const { userId, message ,username} = req.body;
-        const newreclamation = new reclamation({ userId, message ,username});
-        await newreclamation.save();
-        res.status(201).json(newreclamation);
+        const { userId, message, username, title, reason } = req.body;
+        const newReclamation = new reclamation({ userId, message, title, reason, username });
+        await newReclamation.save();
+        res.status(201).json(newReclamation);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

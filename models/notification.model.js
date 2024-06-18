@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const notificationSchema = new Schema({
     // Define your schema fields here
-    title: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     message: { type: String, required: true },
     timestamp: { type: Date, default: Date.now }
 });
