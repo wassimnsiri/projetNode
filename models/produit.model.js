@@ -22,6 +22,7 @@ const produitSchema = new mongoose.Schema({
    
     quantitedispo: {
         type: Number,
+        required:false
     },
     image : { type: String , default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEVXDwzX6U-QdKhH5zxH8ki-fLadEfLkJSSsKQk8kRpg&s"},
 }  ); 

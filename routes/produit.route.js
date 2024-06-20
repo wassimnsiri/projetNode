@@ -1,7 +1,7 @@
 import { Router } from "express";
 import Stripe from "stripe";
 import dotenv from "dotenv";
-import { addproduit, getproduits } from "../controllers/produit.controller.js";
+import {modifierproduit,deleteproduit, addproduit, getproduits } from "../controllers/produit.controller.js";
 import produit from "../models/produit.model.js";
 
 dotenv.config();
@@ -11,7 +11,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET);
 const produitrouter = Router();
 produitrouter.post('/addproduit', addproduit);
 produitrouter.get('/getproduits', getproduits);
-
+produitrouter.delete('/delete/:id',deleteproduit)
+produitrouter.put('/modifier/:id',modifierproduit)
 produitrouter.post('/stripe', async (req, res) => {
     const { paymentToken, userId, price } = req.body;
 
