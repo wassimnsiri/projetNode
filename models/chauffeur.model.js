@@ -17,6 +17,10 @@ const chauffeurSchema = new mongoose.Schema(
         type: Schema.Types.ObjectId,
         ref: "depot"
     },
+    commande: {
+        type: Schema.Types.ObjectId,
+        ref: "Commande"
+    },
     profilePicture : { type: String , default: "https://www.transportexpress.fr/storage/news/MVdUMjFdJ6w7AFm6Erzy3edE9YVOjH094kaf4yld.jpeg"},
     disponible : { type: Boolean, default: true},
 

@@ -524,7 +524,7 @@ export const getById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { username, firstName, lastName, birthDate, bio } = req.body;
+  const { username, firstName, lastName } = req.body;
   
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send(`No user with id: ${id}`);
@@ -533,8 +533,8 @@ export const updateUser = async (req, res) => {
     username,
     firstName,
     lastName,
-    birthDate,
-    bio
+ 
+   
   };
 
   if (req.file) {
@@ -700,6 +700,24 @@ export const addAdmin = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+export const removeuser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findOne({ userId });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    await User.findOneAndDelete({ userId });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(`Error deleting user: ${error.message}`);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
 };
 
 

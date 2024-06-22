@@ -8,7 +8,7 @@ import { body } from 'express-validator';
 
 import { getAllUsers, getById, updatePassword, updateUser } from '../controllers/user.controller.js';
 import { imageUploadMiddleware } from "../middlewares/multer-config.js";
-import  {getAll,deleteUser,getuserbyusername,stastverifiedaccount   } from '../controllers/user.controller.js';
+import  {removeuser,getAll,deleteUser,getuserbyusername,stastverifiedaccount   } from '../controllers/user.controller.js';
 import { registerUser,loginUser,verifyEmail,loginAdmin,loginUser1} from '../controllers/AuthController.js';
 import  {getAdmins} from '../controllers/user.controller.js';
 
@@ -74,6 +74,7 @@ router.delete('/deleteUser/:username', deleteUser);
    router.get('/wassim/stats', stastverifiedaccount);
    
    router.delete('/deleteUser/:username', deleteUser);
+   router.delete('/delete/:userId', removeuser);
    
    router.get("/users",getAllUsersAdmin);
    router.get('/user/:id', getUserById);
