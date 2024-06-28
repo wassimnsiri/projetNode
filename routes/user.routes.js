@@ -23,10 +23,18 @@ router.get('/reset-password/:token', (req, res) => {
     res.render('reset-password', { token });
 });
 
-router.post("/change-password", async (req, res) => {
+router.post('/change-password', async (req, res) => {
     const newPassword = req.body.password;
-    const { token} = req.body;
-    console.log(token, newPassword);
+    const { token } = req.body;
+
+    // Log the received values
+    console.log("Token:", token);
+    console.log("New Password:", newPassword);
+
+    if (!newPassword) {
+        return res.status(400).json({ message: "Password is required" });
+    }
+
     try {
         // Validate token and find user by token
         const user = await User.findOne({ resetVerificationToken: token });
@@ -35,12 +43,13 @@ router.post("/change-password", async (req, res) => {
             return res.status(400).json({ message: "Invalid or expired token" });
         }
 
-
-    
+        // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
+
+        // Update user's password
         user.password = hashedPassword;
 
+        // Save the updated user
         await user.save();
 
         res.status(200).json({ message: "Password reset successfully" });
